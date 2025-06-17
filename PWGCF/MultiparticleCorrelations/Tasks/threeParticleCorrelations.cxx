@@ -53,7 +53,7 @@ struct ThreeParticleCorrelations {
   float cosPAMin = 0.995;
   float dcaProtonMin = 0.05, dcaPionMin = 0.2;
   int dcaV0DauMax = 1;
-  
+
   // Track filter parameters
   float pionPtMin = 0.3, pionPtMax = 2.3, kaonPtMin = 0.5, kaonPtMax = 2.5, protonPtMin = 0.5, protonPtMax = 2.5;
   float pionPtMid = 1.5, kaonPtMid1 = 1.5, kaonPtMid2 = 2.0, protonPtMid = 0.7;
@@ -74,13 +74,13 @@ struct ThreeParticleCorrelations {
   HistogramRegistry rQARegistry{"QARegistry", {}, OutputObjHandlingPolicy::AnalysisObject, false, true};
 
   // Collision & Event filters
-  Filter collCent = aod::cent::centFT0C > centMin && aod::cent::centFT0C < centMax;
+  Filter collCent = aod::cent::centFT0C > centMin&& aod::cent::centFT0C < centMax;
   Filter collZvtx = nabs(aod::collision::posZ) < zvtxMax;
   Filter mcCollZvtx = nabs(aod::mccollision::posZ) < zvtxMax;
   Filter evSelect = aod::evsel::sel8 == true;
 
   // Track filters
-  Filter trackPt = aod::track::pt > trackPtMin && aod::track::pt < trackPtMax;
+  Filter trackPt = aod::track::pt > trackPtMin&& aod::track::pt < trackPtMax;
   Filter trackEta = nabs(aod::track::eta) < trackEtaMax;
   Filter globalTracks = requireGlobalTrackInFilter();
 
@@ -108,8 +108,8 @@ struct ThreeParticleCorrelations {
                                                      aod::pidTOFFullPi, aod::pidTOFFullKa, aod::pidTOFFullPr, aod::pidTOFbeta>>;
 
   // Partitions
-  Partition<MyFilteredMCParticles> mcTracks = aod::mcparticle::pt > trackPtMin && aod::mcparticle::pt < trackPtMax;
-  Partition<MyFilteredMCParticles> mcV0s = aod::mcparticle::pt > v0PtMin && aod::mcparticle::pt < v0PtMax && nabs(aod::mcparticle::eta) < v0EtaMax;
+  Partition<MyFilteredMCParticles> mcTracks = aod::mcparticle::pt > trackPtMin&& aod::mcparticle::pt < trackPtMax;
+  Partition<MyFilteredMCParticles> mcV0s = aod::mcparticle::pt > v0PtMin&& aod::mcparticle::pt < v0PtMax&& nabs(aod::mcparticle::eta) < v0EtaMax;
   Partition<MyFilteredMCParticles> mcTriggers = ((aod::mcparticle::pdgCode == static_cast<int>(kLambda0) || aod::mcparticle::pdgCode == static_cast<int>(kLambda0Bar)) &&
                                                  aod::mcparticle::pt > v0PtMin && aod::mcparticle::pt < v0PtMax && nabs(aod::mcparticle::eta) < v0EtaMax);
   Partition<MyFilteredMCParticles> mcAssociates = (((aod::mcparticle::pdgCode == static_cast<int>(kPiPlus) || aod::mcparticle::pdgCode == static_cast<int>(kPiMinus)) && aod::mcparticle::pt > pionPtMin && aod::mcparticle::pt < pionPtMax) ||
@@ -918,14 +918,14 @@ struct ThreeParticleCorrelations {
     if (FillHist) {
       rQARegistry.fill(HIST("hNEvents"), 2.5);
     }
-    
+
     return true;
   }
 
   template <class Col, class V0Cand, typename T>
   bool v0Filters(const Col& col, const V0Cand& v0, T const&) // V0 filter
   {
-    
+
     // Kinematic cuts
     if (v0.pt() <= v0PtMin || v0.pt() >= v0PtMax || std::abs(v0.eta()) >= v0EtaMax) {
       return false;
@@ -942,17 +942,17 @@ struct ThreeParticleCorrelations {
     }
     if (v0Sign(v0) == 1) {
       if (std::abs(posDaughter.tpcNSigmaPr()) >= nSigma5 || std::abs(negDaughter.tpcNSigmaPi()) >= nSigma5) {
-	return false;
+        return false;
       }
       if (std::abs(v0.dcapostopv()) <= dcaProtonMin || std::abs(v0.dcanegtopv()) <= dcaPionMin) {
-	return false;
+        return false;
       }
     } else if (v0Sign(v0) == -1) {
       if (std::abs(posDaughter.tpcNSigmaPi()) >= nSigma5 || std::abs(negDaughter.tpcNSigmaPr()) >= nSigma5) {
-	return false;
+        return false;
       }
       if (std::abs(v0.dcapostopv()) <= dcaPionMin || std::abs(v0.dcanegtopv()) <= dcaProtonMin) {
-	return false;
+        return false;
       }
     }
 
